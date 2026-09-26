@@ -307,8 +307,178 @@ var PULSEHR_DATA = {
     { name: "Arjun Reddy", id: "EMP-1006", timeIn: "09:15 AM", timeOut: "--", status: "Present" },
     { name: "Priya Sundaram", id: "EMP-1007", timeIn: "09:00 AM", timeOut: "--", status: "Present" },
     { name: "Devika Patel", id: "EMP-1008", timeIn: "--", timeOut: "--", status: "On Leave" }
+  ],
+
+  // Payroll & Compensation Information
+  payroll: {
+    monthlyDisbursement: "₹2,35,20,000",
+    averageSalary: "₹96,000 / mo",
+    nextPayDate: "October 01, 2026",
+    payslips: [
+      {
+        id: "PAY-2026-0901",
+        employeeId: "EMP-1001",
+        name: "Aarav Mukherjee",
+        designation: "Senior Backend Developer",
+        department: "Engineering",
+        month: "September 2026",
+        basic: 60000,
+        hra: 24000,
+        allowances: 12000,
+        gross: 96000,
+        pfDeduction: 7200,
+        profTax: 200,
+        netPay: 88600,
+        status: "Paid",
+        paidOn: "2026-09-25"
+      },
+      {
+        id: "PAY-2026-0902",
+        employeeId: "EMP-1002",
+        name: "Rohan Varma",
+        designation: "Frontend Engineer (React)",
+        department: "Engineering",
+        month: "September 2026",
+        basic: 52000,
+        hra: 20800,
+        allowances: 10200,
+        gross: 83000,
+        pfDeduction: 6240,
+        profTax: 200,
+        netPay: 76560,
+        status: "Paid",
+        paidOn: "2026-09-25"
+      },
+      {
+        id: "PAY-2026-0903",
+        employeeId: "EMP-1003",
+        name: "Meera Nair",
+        designation: "Product Designer (UI/UX)",
+        department: "Product & Design",
+        month: "September 2026",
+        basic: 58000,
+        hra: 23200,
+        allowances: 11800,
+        gross: 93000,
+        pfDeduction: 6960,
+        profTax: 200,
+        netPay: 85840,
+        status: "Paid",
+        paidOn: "2026-09-25"
+      },
+      {
+        id: "PAY-2026-0904",
+        employeeId: "EMP-1004",
+        name: "Siddharth Jain",
+        designation: "Cloud DevOps Specialist",
+        department: "Engineering",
+        month: "September 2026",
+        basic: 64000,
+        hra: 25600,
+        allowances: 13400,
+        gross: 103000,
+        pfDeduction: 7680,
+        profTax: 200,
+        netPay: 95120,
+        status: "Processing",
+        paidOn: "--"
+      }
+    ]
+  },
+
+  // Performance Reviews & OKRs
+  performance: [
+    {
+      id: "REV-2026-Q3-01",
+      employeeId: "EMP-1001",
+      name: "Aarav Mukherjee",
+      department: "Engineering",
+      reviewer: "Vikram Sengupta",
+      period: "Q3 2026",
+      rating: 4.8,
+      okrSummary: "Delivered asynchronous API rewrite; reduced p99 latency to 32ms.",
+      feedback: "Exceptional architecture ownership and code review diligence. Recommended for Tech Lead track.",
+      badge: "Outstanding Performer"
+    },
+    {
+      id: "REV-2026-Q3-02",
+      employeeId: "EMP-1002",
+      name: "Rohan Varma",
+      department: "Engineering",
+      reviewer: "Vikram Sengupta",
+      period: "Q3 2026",
+      rating: 4.5,
+      okrSummary: "Built accessible React design tokens with 99.8% test coverage.",
+      feedback: "Consistent component velocity and proactive collaboration with UX design team.",
+      badge: "Exceeds Expectations"
+    },
+    {
+      id: "REV-2026-Q3-03",
+      employeeId: "EMP-1003",
+      name: "Meera Nair",
+      department: "Product & Design",
+      reviewer: "Ananya Roy",
+      period: "Q3 2026",
+      rating: 4.9,
+      okrSummary: "Spearheaded user research with 45 enterprise customers for v2 redesign.",
+      feedback: "Top tier design vision and cross-functional empathy. Crucial driver for product retention.",
+      badge: "Top Contributor"
+    }
+  ],
+
+  // Document Vault & Verification Records
+  documents: [
+    {
+      id: "DOC-881",
+      employeeName: "Aarav Mukherjee",
+      title: "Signed Employment Master Contract (Permanent)",
+      type: "Legal Agreement",
+      fileSize: "2.4 MB PDF",
+      uploadedAt: "2026-09-10",
+      status: "Verified",
+      cdnUrl: "https://res.cloudinary.com/pulsehr/raw/upload/v1/contracts/emp-1001-agreement.pdf"
+    },
+    {
+      id: "DOC-882",
+      employeeName: "Aarav Mukherjee",
+      title: "Form 16 & Tax Deduction Certificate (FY 25-26)",
+      type: "Tax Compliance",
+      fileSize: "1.1 MB PDF",
+      uploadedAt: "2026-08-15",
+      status: "Verified",
+      cdnUrl: "https://res.cloudinary.com/pulsehr/raw/upload/v1/tax/emp-1001-form16.pdf"
+    },
+    {
+      id: "DOC-883",
+      employeeName: "Meera Nair",
+      title: "Proprietary IP & Mutual Non-Disclosure Agreement",
+      type: "Compliance",
+      fileSize: "850 KB PDF",
+      uploadedAt: "2026-09-18",
+      status: "Verified",
+      cdnUrl: "https://res.cloudinary.com/pulsehr/raw/upload/v1/nda/emp-1003-nda.pdf"
+    },
+    {
+      id: "DOC-884",
+      employeeName: "Rohan Varma",
+      title: "Group Comprehensive Health Insurance Card",
+      type: "Benefits",
+      fileSize: "620 KB PDF",
+      uploadedAt: "2026-09-01",
+      status: "Verified",
+      cdnUrl: "https://res.cloudinary.com/pulsehr/raw/upload/v1/insurance/emp-1002-health.pdf"
+    }
+  ],
+
+  // Real-time Notification Feed
+  notifications: [
+    { id: 1, title: "Leave Request Submitted", desc: "Meera Nair applied for Casual Leave (3 Days)", time: "10m ago", read: false },
+    { id: 2, title: "September Payroll Disbursed", desc: "218 active accounts credited via automated NEFT", time: "1h ago", read: false },
+    { id: 3, title: "Q3 Review Submitted", desc: "Vikram Sengupta completed review for Aarav Mukherjee", time: "3h ago", read: true },
+    { id: 4, title: "New Employee Provisioned", desc: "EMP-1008 (Devika Patel) onboarded to Engineering", time: "1d ago", read: true }
   ]
 };
 
 // Global Browser Attachment
 window.PULSEHR_DATA = PULSEHR_DATA;
+

@@ -1,20 +1,28 @@
 /**
  * PulseHR Enterprise — Client Controller & Interactive Application Engine
- * Handles State, RBAC Rendering, SVG Visualizations, CRUD Operations, and Modals
+ * Handles State, RBAC Rendering, SVG Visualizations, CRUD Operations, Payroll,
+ * Document Vault, Notifications, CSV Exports, and Modals
  */
 
 document.addEventListener('DOMContentLoaded', () => {
   const store = window.PULSEHR_DATA;
   if (!store) return;
 
-  // Initialize UI Components
+  // Initialize UI Modules
   initNavigation();
   initRoleSwitcher();
+  initQuickGuideTour();
+  initNotifications();
+  initGlobalSearch();
   initKPIsAndCharts();
   initEmployeesTable();
   initLeavesModule();
   initAttendanceModule();
   initTasksModule();
+  initPayrollModule();
+  initPerformanceModule();
+  initDocumentsModule();
+  initCSVExports();
   initModals();
   updateRBACUI();
 
@@ -79,6 +87,11 @@ document.addEventListener('DOMContentLoaded', () => {
       token: `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.pulsehr.${roleKey}.2026.token`
     };
 
+    // Update active button state
+    document.querySelectorAll('.role-btn').forEach(btn => {
+      btn.classList.toggle('active', btn.getAttribute('data-role') === roleKey);
+    });
+
     // Update Sidebar Profile
     const sidebarName = document.getElementById('sidebar-user-name');
     const sidebarRole = document.getElementById('sidebar-user-role');
@@ -86,7 +99,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const jwtBadge = document.getElementById('jwt-pill-badge');
 
     if (sidebarName) sidebarName.textContent = profile.name;
-    if (sidebarRole) sidebarRole.textContent = `${profile.role.toUpperCase()} &bull; ${profile.department}`;
+    if (sidebarRole) sidebarRole.textContent = `${profile.role.toUpperCase()} • ${profile.department}`;
     if (sidebarAvatar) sidebarAvatar.src = profile.avatar;
     if (jwtBadge) jwtBadge.innerHTML = `● JWT ACTIVE (${profile.role.toUpperCase()})`;
 
@@ -117,7 +130,114 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   /* ========================================================================
-     3. KPI Metrics & SVG Charts
+     3. Quick Interactive Guide Tour Buttons
+     ======================================================================== */
+  function initQuickGuideTour() {
+    const guideAdminBtn = document.getElementById('guide-admin-btn');
+    const guideEmpBtn = document.getElementById('guide-employee-btn');
+
+    if (guideAdminBtn) {
+      guideAdminBtn.addEventListener('click', () => {
+        switchRole('admin');
+        showToast('👑 Admin Mode active: Full provisioning, analytics, and delete permissions enabled.');
+      });
+    }
+
+    if (guideEmpBtn) {
+      guideEmpBtn.addEventListener('click', () => {
+        switchRole('employee');
+        showToast('👤 Employee Mode active: Restricted to personal view, applying leaves, and clocking in.');
+      });
+    }
+  }
+
+  /* ========================================================================
+     4. Notifications Center Dropdown
+     ======================================================================== */
+  function initNotifications() {
+    const btn = document.getElementById('notification-btn');
+    const dropdown = document.getElementById('notification-dropdown');
+    const list = document.getElementById('notification-list');
+    const badge = document.getElementById('notif-badge');
+    const markReadBtn = document.getElementById('mark-notifs-read-btn');
+
+    function renderNotifications() {
+      if (!list) return;
+      const unreadCount = store.notifications.filter(n => !n.read).length;
+
+      if (badge) {
+        badge.textContent = unreadCount;
+        badge.style.display = unreadCount > 0 ? 'flex' : 'none';
+      }
+
+      list.innerHTML = store.notifications.map(n => `
+        <div class="notification-item ${n.read ? '' : 'unread'}">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2px;">
+            <strong style="color: ${n.read ? 'var(--text-main)' : 'var(--primary)'};">${n.title}</strong>
+            <span style="font-size: 0.72rem; color: var(--text-muted);">${n.time}</span>
+          </div>
+          <p style="margin: 0; color: var(--text-secondary);">${n.desc}</p>
+        </div>
+      `).join('');
+    }
+
+    if (btn && dropdown) {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        dropdown.classList.toggle('show');
+      });
+
+      document.addEventListener('click', (e) => {
+        if (!dropdown.contains(e.target) && e.target !== btn) {
+          dropdown.classList.remove('show');
+        }
+      });
+    }
+
+    if (markReadBtn) {
+      markReadBtn.addEventListener('click', () => {
+        store.notifications.forEach(n => n.read = true);
+        renderNotifications();
+        showToast('All notifications marked as read.');
+      });
+    }
+
+    renderNotifications();
+  }
+
+  /* ========================================================================
+     5. Global Quick Search
+     ======================================================================== */
+  function initGlobalSearch() {
+    const searchInput = document.getElementById('global-search-input');
+    if (!searchInput) return;
+
+    searchInput.addEventListener('input', (e) => {
+      const q = e.target.value.toLowerCase().trim();
+      if (!q) return;
+
+      // Filter employees table if open, or switch to it if searching specifically
+      const empSearch = document.getElementById('emp-search-input');
+      if (empSearch) {
+        empSearch.value = q;
+        initEmployeesTable();
+      }
+    });
+
+    searchInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        const q = searchInput.value.toLowerCase().trim();
+        if (!q) return;
+        // Switch to employees tab to show match
+        const empTabBtn = document.querySelector('[data-tab=employees]');
+        if (empTabBtn) empTabBtn.click();
+        showToast(`Filtered directory for "${q}"`);
+      }
+    });
+  }
+
+  /* ========================================================================
+     6. KPI Metrics & SVG Charts
      ======================================================================== */
   function initKPIsAndCharts() {
     // 4 KPI Cards
@@ -222,13 +342,12 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   /* ========================================================================
-     4. Employees Directory Module
+     7. Employees Directory Module
      ======================================================================== */
   function initEmployeesTable() {
     const tableBody = document.getElementById('employees-table-body');
     const searchInput = document.getElementById('emp-search-input');
     const deptFilter = document.getElementById('emp-dept-filter');
-    const addEmpBtn = document.getElementById('add-emp-btn');
 
     function renderTable() {
       if (!tableBody) return;
@@ -315,11 +434,10 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   /* ========================================================================
-     5. Leave Management Module (Approve / Reject Workflow)
+     8. Leave Management Module (Approve / Reject Workflow)
      ======================================================================== */
   function initLeavesModule() {
     const tableBody = document.getElementById('leaves-table-body');
-    const applyBtn = document.getElementById('apply-leave-btn');
 
     function renderLeaves() {
       if (!tableBody) return;
@@ -387,7 +505,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   /* ========================================================================
-     6. Attendance & 1-Click Clock-In
+     9. Attendance & 1-Click Clock-In
      ======================================================================== */
   function initAttendanceModule() {
     const clockBtn = document.getElementById('clock-in-widget-btn');
@@ -406,7 +524,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
           store.attendanceLogs.unshift({
             name: store.currentUser.name,
-            id: "CURRENT",
+            id: "EMP-ACTIVE",
             timeIn: timeNow,
             timeOut: "--",
             status: "Present"
@@ -414,7 +532,7 @@ document.addEventListener('DOMContentLoaded', () => {
           store.metrics.presentToday++;
           initKPIsAndCharts();
           renderAttendance();
-          showToast(`Clocked IN at ${timeNow}! Attendance verified.`);
+          showToast(`Clocked IN at ${timeNow}! Real-time ingress recorded.`);
         } else {
           isClockedIn = false;
           clockBtn.innerHTML = `⏱️ Clock In`;
@@ -426,7 +544,7 @@ document.addEventListener('DOMContentLoaded', () => {
             store.attendanceLogs[0].timeOut = timeNow;
           }
           renderAttendance();
-          showToast(`Clocked OUT at ${timeNow}! Shift logged.`);
+          showToast(`Clocked OUT at ${timeNow}! Shift archived.`);
         }
       });
     }
@@ -452,7 +570,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   /* ========================================================================
-     7. Tasks Management Module
+     10. Tasks Management Module
      ======================================================================== */
   function initTasksModule() {
     const taskContainer = document.getElementById('tasks-list-container');
@@ -500,7 +618,348 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   /* ========================================================================
-     8. Modals (Add Employee, Apply Leave, Auth Modal)
+     11. Payroll & Payslips Module
+     ======================================================================== */
+  function initPayrollModule() {
+    const tableBody = document.getElementById('payroll-table-body');
+    const payslipModal = document.getElementById('payslip-view-modal');
+    const modalContent = document.getElementById('payslip-modal-content');
+    const printBtn = document.getElementById('print-payslip-btn');
+
+    function renderPayroll() {
+      if (!tableBody || !store.payroll || !store.payroll.payslips) return;
+
+      tableBody.innerHTML = store.payroll.payslips.map(slip => `
+        <tr>
+          <td>
+            <div style="font-weight: 700;">${slip.name}</div>
+            <div style="font-family: var(--font-mono); font-size: 0.76rem; color: var(--text-muted);">${slip.employeeId}</div>
+          </td>
+          <td>
+            <div>${slip.designation}</div>
+            <small style="color: var(--text-muted);">${slip.department}</small>
+          </td>
+          <td><strong>${slip.month}</strong></td>
+          <td style="font-family: var(--font-mono); font-weight: 600;">₹${slip.gross.toLocaleString('en-IN')}</td>
+          <td style="font-family: var(--font-mono); color: #DC2626;">- ₹${(slip.pfDeduction + slip.profTax).toLocaleString('en-IN')}</td>
+          <td style="font-family: var(--font-mono); font-weight: 700; color: #059669; font-size: 0.95rem;">
+            ₹${slip.netPay.toLocaleString('en-IN')}
+          </td>
+          <td>
+            <span class="status-badge ${slip.status === 'Paid' ? 'badge-active' : 'badge-pending'}">
+              ● ${slip.status}
+            </span>
+          </td>
+          <td>
+            <button class="btn btn-secondary btn-sm view-slip-btn" data-id="${slip.id}">
+              👁️ View Payslip
+            </button>
+          </td>
+        </tr>
+      `).join('');
+
+      tableBody.querySelectorAll('.view-slip-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const id = btn.getAttribute('data-id');
+          const slip = store.payroll.payslips.find(s => s.id === id);
+          if (slip && modalContent) {
+            modalContent.innerHTML = `
+              <div class="payslip-voucher">
+                <div class="voucher-header">
+                  <div>
+                    <h2 style="font-family: var(--font-heading); font-size: 1.25rem; font-weight: 800; color: #1E3A8A; margin: 0;">
+                      PulseHR Technologies Pvt. Ltd.
+                    </h2>
+                    <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 2px;">
+                      DLF CyberCity, Tower 4, Sector 24 &bull; Reg: CIN-U72200WB2026PTC098
+                    </p>
+                  </div>
+                  <div style="text-align: right;">
+                    <span class="brand-badge" style="font-size: 0.72rem;">OFFICIAL PAY VOUCHER</span>
+                    <div style="font-family: var(--font-mono); font-size: 0.82rem; font-weight: 700; margin-top: 4px;">
+                      ${slip.id}
+                    </div>
+                    <div style="font-size: 0.76rem; color: var(--text-muted);">${slip.month}</div>
+                  </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; font-size: 0.84rem;">
+                  <div>
+                    <div style="color: var(--text-muted);">Employee Name:</div>
+                    <strong>${slip.name}</strong>
+                  </div>
+                  <div>
+                    <div style="color: var(--text-muted);">Employee ID &amp; Dept:</div>
+                    <strong>${slip.employeeId} &bull; ${slip.department}</strong>
+                  </div>
+                  <div>
+                    <div style="color: var(--text-muted);">Designation:</div>
+                    <strong>${slip.designation}</strong>
+                  </div>
+                  <div>
+                    <div style="color: var(--text-muted);">Disbursement Mode:</div>
+                    <strong>HDFC Bank NEFT (Processed)</strong>
+                  </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                  <div>
+                    <h4 style="font-size: 0.85rem; font-weight: 700; color: #059669; border-bottom: 1px solid var(--border-subtle); padding-bottom: 4px;">
+                      EARNINGS
+                    </h4>
+                    <table class="voucher-table">
+                      <tr><td>Basic Salary</td><td style="text-align: right; font-family: var(--font-mono);">₹${slip.basic.toLocaleString('en-IN')}</td></tr>
+                      <tr><td>House Rent Allowance (HRA)</td><td style="text-align: right; font-family: var(--font-mono);">₹${slip.hra.toLocaleString('en-IN')}</td></tr>
+                      <tr><td>Special Allowances</td><td style="text-align: right; font-family: var(--font-mono);">₹${slip.allowances.toLocaleString('en-IN')}</td></tr>
+                      <tr style="font-weight: 700; border-top: 1px solid var(--border-subtle);">
+                        <td>Gross Earnings</td>
+                        <td style="text-align: right; font-family: var(--font-mono);">₹${slip.gross.toLocaleString('en-IN')}</td>
+                      </tr>
+                    </table>
+                  </div>
+
+                  <div>
+                    <h4 style="font-size: 0.85rem; font-weight: 700; color: #DC2626; border-bottom: 1px solid var(--border-subtle); padding-bottom: 4px;">
+                      DEDUCTIONS
+                    </h4>
+                    <table class="voucher-table">
+                      <tr><td>Provident Fund (EPF 12%)</td><td style="text-align: right; font-family: var(--font-mono); color: #DC2626;">₹${slip.pfDeduction.toLocaleString('en-IN')}</td></tr>
+                      <tr><td>Professional Tax (PT)</td><td style="text-align: right; font-family: var(--font-mono); color: #DC2626;">₹${slip.profTax.toLocaleString('en-IN')}</td></tr>
+                      <tr><td>Income Tax (TDS)</td><td style="text-align: right; font-family: var(--font-mono); color: #DC2626;">₹0</td></tr>
+                      <tr style="font-weight: 700; border-top: 1px solid var(--border-subtle);">
+                        <td>Total Deductions</td>
+                        <td style="text-align: right; font-family: var(--font-mono); color: #DC2626;">₹${(slip.pfDeduction + slip.profTax).toLocaleString('en-IN')}</td>
+                      </tr>
+                    </table>
+                  </div>
+                </div>
+
+                <div class="voucher-total-bar" style="margin-top: 16px;">
+                  <div>
+                    <div style="font-size: 0.74rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-muted);">
+                      Net Take-Home Pay
+                    </div>
+                    <div style="font-size: 0.8rem; font-weight: normal; color: var(--text-secondary);">
+                      Credited to registered account on ${slip.paidOn}
+                    </div>
+                  </div>
+                  <div style="font-size: 1.4rem; color: #059669; font-family: var(--font-mono);">
+                    ₹${slip.netPay.toLocaleString('en-IN')}
+                  </div>
+                </div>
+              </div>
+            `;
+            payslipModal.classList.add('show');
+          }
+        });
+      });
+    }
+
+    if (printBtn) {
+      printBtn.addEventListener('click', () => {
+        window.print();
+      });
+    }
+
+    renderPayroll();
+  }
+
+  /* ========================================================================
+     12. Performance Reviews & OKRs Module
+     ======================================================================== */
+  function initPerformanceModule() {
+    const grid = document.getElementById('reviews-grid-container');
+    if (!grid || !store.performance) return;
+
+    grid.innerHTML = store.performance.map(rev => `
+      <div class="review-card">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 10px;">
+          <div>
+            <h4 style="font-weight: 800; font-size: 1.05rem; margin: 0; color: var(--text-main);">${rev.name}</h4>
+            <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 2px;">
+              ${rev.department} &bull; Reviewer: ${rev.reviewer}
+            </div>
+          </div>
+          <div style="background: #FEF3C7; color: #B45309; padding: 4px 10px; border-radius: var(--radius-full); font-weight: 800; font-size: 0.85rem; display: flex; align-items: center; gap: 4px;">
+            ⭐ ${rev.rating} / 5.0
+          </div>
+        </div>
+
+        <div style="background: var(--bg-subtle); padding: 10px 12px; border-radius: var(--radius-sm); border-left: 3px solid var(--primary);">
+          <div style="font-size: 0.74rem; font-weight: 700; text-transform: uppercase; color: var(--primary);">
+            OKR Milestone Achievement
+          </div>
+          <div style="font-size: 0.84rem; color: var(--text-main); margin-top: 3px; font-weight: 600;">
+            ${rev.okrSummary}
+          </div>
+        </div>
+
+        <p style="font-size: 0.84rem; color: var(--text-secondary); font-style: italic; line-height: 1.45; margin: 0;">
+          "${rev.feedback}"
+        </p>
+
+        <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 8px; border-top: 1px solid var(--border-subtle);">
+          <span class="brand-badge" style="font-size: 0.72rem; background: #ECFDF5; color: #059669; border-color: #A7F3D0;">
+            🏆 ${rev.badge}
+          </span>
+          <span style="font-family: var(--font-mono); font-size: 0.78rem; color: var(--text-muted);">${rev.period}</span>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  /* ========================================================================
+     13. Document Vault Module
+     ======================================================================== */
+  function initDocumentsModule() {
+    const grid = document.getElementById('documents-grid-container');
+    const openUploadBtn = document.getElementById('open-upload-doc-btn');
+    const uploadModal = document.getElementById('upload-doc-modal');
+    const uploadForm = document.getElementById('upload-doc-form');
+
+    function renderDocs() {
+      if (!grid || !store.documents) return;
+
+      grid.innerHTML = store.documents.map(doc => `
+        <div class="doc-card">
+          <div style="display: flex; align-items: flex-start; gap: 12px;">
+            <div style="font-size: 1.8rem; background: #EFF6FF; padding: 10px; border-radius: var(--radius-md); border: 1px solid #DBEAFE;">
+              📄
+            </div>
+            <div>
+              <div style="font-weight: 700; font-size: 0.92rem; color: var(--text-main); line-height: 1.35;">
+                ${doc.title}
+              </div>
+              <div style="font-size: 0.78rem; color: var(--text-muted); margin-top: 4px;">
+                Belongs to: <strong>${doc.employeeName}</strong>
+              </div>
+            </div>
+          </div>
+
+          <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.78rem; color: var(--text-muted); padding-top: 8px; border-top: 1px solid var(--border-subtle);">
+            <span style="font-family: var(--font-mono);">${doc.fileSize}</span>
+            <span class="status-badge badge-active">✓ ${doc.status}</span>
+          </div>
+
+          <div style="display: flex; gap: 8px;">
+            <button class="btn btn-secondary btn-sm preview-doc-btn" style="flex: 1;" data-title="${doc.title}">
+              👁️ Preview
+            </button>
+            <button class="btn btn-primary btn-sm download-doc-btn" style="flex: 1;" data-title="${doc.title}">
+              ⬇️ Download
+            </button>
+          </div>
+        </div>
+      `).join('');
+
+      grid.querySelectorAll('.preview-doc-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const t = btn.getAttribute('data-title');
+          showToast(`Displaying verified preview for "${t}"`);
+        });
+      });
+
+      grid.querySelectorAll('.download-doc-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const t = btn.getAttribute('data-title');
+          showToast(`Downloading encrypted copy of "${t}"...`);
+        });
+      });
+    }
+
+    if (openUploadBtn && uploadModal) {
+      openUploadBtn.addEventListener('click', () => uploadModal.classList.add('show'));
+    }
+
+    if (uploadForm) {
+      uploadForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const title = document.getElementById('doc-title-input').value;
+        const type = document.getElementById('doc-type-select').value;
+
+        store.documents.unshift({
+          id: `DOC-${Math.floor(800 + Math.random() * 200)}`,
+          employeeName: store.currentUser.name,
+          title,
+          type,
+          fileSize: "1.4 MB PDF",
+          uploadedAt: new Date().toISOString().split('T')[0],
+          status: "Verified",
+          cdnUrl: "https://res.cloudinary.com/pulsehr/raw/upload/v1/user/document.pdf"
+        });
+
+        renderDocs();
+        uploadModal.classList.remove('show');
+        uploadForm.reset();
+        showToast(`Document "${title}" encrypted and uploaded to Cloudinary Vault!`);
+      });
+    }
+
+    renderDocs();
+  }
+
+  /* ========================================================================
+     14. CSV Exports (Employees & Attendance)
+     ======================================================================== */
+  function initCSVExports() {
+    const exportEmpBtn = document.getElementById('export-employees-csv-btn');
+    const exportAttBtn = document.getElementById('export-attendance-csv-btn');
+
+    if (exportEmpBtn) {
+      exportEmpBtn.addEventListener('click', () => {
+        const headers = ["Employee ID", "Full Name", "Email", "Department", "Designation", "Reports To", "Status", "Phone", "Location", "Joining Date"];
+        const rows = store.employees.map(e => [
+          `"${e.id}"`,
+          `"${e.name}"`,
+          `"${e.email}"`,
+          `"${e.department}"`,
+          `"${e.designation}"`,
+          `"${e.manager}"`,
+          `"${e.status}"`,
+          `"${e.phone}"`,
+          `"${e.location}"`,
+          `"${e.joiningDate}"`
+        ]);
+
+        const csvContent = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+        downloadCSVBlob(csvContent, 'PulseHR_Employees_Directory_2026.csv');
+        showToast('Exported complete Employee Roster to CSV!');
+      });
+    }
+
+    if (exportAttBtn) {
+      exportAttBtn.addEventListener('click', () => {
+        const headers = ["Employee Name", "Employee ID", "Clock In", "Clock Out", "Status", "Date"];
+        const today = new Date().toISOString().split('T')[0];
+        const rows = store.attendanceLogs.map(a => [
+          `"${a.name}"`,
+          `"${a.id}"`,
+          `"${a.timeIn}"`,
+          `"${a.timeOut}"`,
+          `"${a.status}"`,
+          `"${today}"`
+        ]);
+
+        const csvContent = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+        downloadCSVBlob(csvContent, 'PulseHR_Daily_Attendance_Audit_2026.csv');
+        showToast('Exported Daily Attendance Audit to CSV!');
+      });
+    }
+  }
+
+  function downloadCSVBlob(csvText, filename) {
+    const blob = new Blob([csvText], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.setAttribute('href', url);
+    link.setAttribute('download', filename);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
+
+  /* ========================================================================
+     15. Modals (Add Employee, Apply Leave)
      ======================================================================== */
   function initModals() {
     // Add Employee Modal
@@ -545,7 +1004,7 @@ document.addEventListener('DOMContentLoaded', () => {
         initEmployeesTable();
         addEmpModal.classList.remove('show');
         addEmpForm.reset();
-        showToast(`Employee ${name} successfully added and provisioned!`);
+        showToast(`Employee ${name} provisioned in company directory!`);
       });
     }
 
@@ -594,7 +1053,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   /* ========================================================================
-     9. Toast Notification System
+     16. Toast Notification System
      ======================================================================== */
   function showToast(msg) {
     let toast = document.getElementById('toast-notification');

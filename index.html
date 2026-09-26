@@ -6,10 +6,10 @@
   <title>PulseHR — Enterprise Employee Management &amp; HRMS Platform</title>
   
   <meta name="title" content="PulseHR — Enterprise Employee Management &amp; HRMS Platform">
-  <meta name="description" content="Industry-grade MERN Stack HRMS & Employee Management System featuring hierarchical RBAC (Admin, HR, Manager, Employee), JWT Authentication, Real-time Attendance, Leave Approvals, and Company Analytics.">
+  <meta name="description" content="Industry-grade MERN Stack HRMS & Employee Management System featuring hierarchical RBAC (Admin, HR, Manager, Employee), JWT Authentication, Real-time Attendance, Leave Approvals, Payroll & Payslips, and Company Analytics.">
   <meta name="author" content="Kritika Giri">
 
-  <!-- Google Fonts: Plus Jakarta Sans & Outfit -->
+  <!-- Google Fonts: Plus Jakarta Sans, Outfit, & JetBrains Mono -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Outfit:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -31,7 +31,7 @@
       </div>
 
       <ul class="sidebar-menu">
-        <li class="sidebar-section-title">Core Modules</li>
+        <li class="sidebar-section-title">Core Operations</li>
         <li>
           <button class="nav-tab-btn active" data-tab="dashboard">
             <span class="tab-icon">📊</span>
@@ -63,6 +63,26 @@
           </button>
         </li>
 
+        <li class="sidebar-section-title">Finance &amp; Growth</li>
+        <li>
+          <button class="nav-tab-btn" data-tab="payroll">
+            <span class="tab-icon">💰</span>
+            <span class="tab-label">Payroll &amp; Payslips</span>
+          </button>
+        </li>
+        <li>
+          <button class="nav-tab-btn" data-tab="performance">
+            <span class="tab-icon">🎯</span>
+            <span class="tab-label">Performance &amp; OKRs</span>
+          </button>
+        </li>
+        <li>
+          <button class="nav-tab-btn" data-tab="documents">
+            <span class="tab-icon">📁</span>
+            <span class="tab-label">Document Vault</span>
+          </button>
+        </li>
+
         <li class="sidebar-section-title">Architecture</li>
         <li>
           <button class="nav-tab-btn" data-tab="architecture">
@@ -89,6 +109,8 @@
         <div class="topbar-left">
           <button class="mobile-menu-btn" id="mobile-toggle" aria-label="Toggle menu">☰</button>
           <h1 class="page-title" id="page-title">Executive HRMS Dashboard</h1>
+          <!-- Global Quick Search -->
+          <input type="text" class="global-search-input" id="global-search-input" placeholder="🔍 Quick search everything (name, task, doc)...">
         </div>
 
         <div class="topbar-right">
@@ -105,6 +127,23 @@
           <button class="clock-widget-btn" id="clock-in-widget-btn" title="Quick Attendance Ingress">
             ⏱️ Clock In
           </button>
+
+          <!-- Notification Dropdown -->
+          <div class="notification-wrapper">
+            <button class="notification-btn" id="notification-btn" aria-label="Notifications" title="System Notifications">
+              🔔
+              <span class="notification-badge" id="notif-badge">2</span>
+            </button>
+            <div class="notification-dropdown" id="notification-dropdown">
+              <div class="notification-header">
+                <span>System Notifications</span>
+                <button class="btn btn-secondary btn-sm" id="mark-notifs-read-btn" style="padding: 2px 8px; font-size: 0.72rem;">Mark all read</button>
+              </div>
+              <div class="notification-list" id="notification-list">
+                <!-- Dynamically populated -->
+              </div>
+            </div>
+          </div>
 
           <!-- JWT Session Badge -->
           <div class="jwt-pill-badge" id="jwt-pill-badge">
@@ -125,7 +164,60 @@
              ================================================================== -->
         <section class="tab-panel active" id="tab-dashboard">
           
-          <!-- Architecture Alert Banner -->
+          <!-- Quick Interactive Guide Banner for All Users & Evaluators -->
+          <div class="quick-guide-banner" style="background: linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%); border: 1px solid #BFDBFE; border-radius: var(--radius-lg); padding: 20px 24px; margin-bottom: 24px; box-shadow: var(--shadow-xs);">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 12px; margin-bottom: 14px;">
+              <div>
+                <div style="display: flex; align-items: center; gap: 8px;">
+                  <span style="font-size: 1.15rem;">💡</span>
+                  <h3 style="font-family: var(--font-heading); font-size: 1.05rem; font-weight: 800; color: #1E3A8A; margin: 0;">
+                    Interactive Guide — Explore PulseHR in 30 Seconds
+                  </h3>
+                </div>
+                <p style="font-size: 0.84rem; color: #1E40AF; margin-top: 4px;">
+                  Built with hierarchical Role-Based Access Control (Admin &gt; HR &gt; Manager &gt; Employee). Test permissions live:
+                </p>
+              </div>
+              <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                <button class="btn btn-primary btn-sm" id="guide-admin-btn">👑 Test Admin View</button>
+                <button class="btn btn-secondary btn-sm" id="guide-employee-btn">👤 Test Employee View</button>
+                <button class="btn btn-secondary btn-sm" onclick="document.querySelector('[data-tab=payroll]').click()">💰 View Payslips</button>
+              </div>
+            </div>
+
+            <div class="quick-guide-grid">
+              <div class="guide-step">
+                <div class="guide-num">1</div>
+                <div>
+                  <strong>Switch Roles Instantly</strong>
+                  <p>Click Admin, HR, Manager, or Employee in the top bar to inspect dynamic authorization changes.</p>
+                </div>
+              </div>
+              <div class="guide-step">
+                <div class="guide-num">2</div>
+                <div>
+                  <strong>Live Attendance Clock-In</strong>
+                  <p>Click "⏱️ Clock In" to trigger an authenticated timestamped log with IP audit tracking.</p>
+                </div>
+              </div>
+              <div class="guide-step">
+                <div class="guide-num">3</div>
+                <div>
+                  <strong>Payroll &amp; Salary Vouchers</strong>
+                  <p>Inspect monthly disbursements, salary breakdowns (Basic, HRA, PF), and download printable payslips.</p>
+                </div>
+              </div>
+              <div class="guide-step">
+                <div class="guide-num">4</div>
+                <div>
+                  <strong>Document Vault &amp; CSV Export</strong>
+                  <p>Verify Form 16, NDA contracts, or download instant CSV reports for Directory and Attendance.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Architecture Operational Banner -->
           <div style="background: #FFFFFF; border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); padding: 18px 24px; margin-bottom: 24px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px; box-shadow: var(--shadow-xs);">
             <div>
               <div style="display: flex; align-items: center; gap: 8px;">
@@ -145,7 +237,7 @@
             </div>
           </div>
 
-          <!-- 4 Core Metric KPI Cards (Exact User Request) -->
+          <!-- 4 Core Metric KPI Cards -->
           <div class="kpi-cards-grid">
             <!-- 1. Total Employees -->
             <div class="kpi-card">
@@ -198,7 +290,7 @@
 
           <!-- 2 Visual Charts: Employee Growth & Department Distribution -->
           <div class="charts-grid">
-            <!-- Chart 1: Employee Growth 📈 Line Chart -->
+            <!-- Chart 1: Employee Growth Line Chart -->
             <div class="chart-card">
               <div class="chart-header">
                 <div class="chart-title">
@@ -213,7 +305,7 @@
               </div>
             </div>
 
-            <!-- Chart 2: Department Distribution 📊 Chart -->
+            <!-- Chart 2: Department Distribution Chart -->
             <div class="chart-card">
               <div class="chart-header">
                 <div class="chart-title">
@@ -296,10 +388,15 @@
                 </select>
               </div>
 
-              <div class="rbac-hr-admin">
-                <button class="btn btn-primary" id="open-add-emp-btn">
-                  + Add Employee
+              <div style="display: flex; gap: 8px; align-items: center;">
+                <button class="btn btn-secondary btn-sm" id="export-employees-csv-btn" title="Export complete employee roster to CSV">
+                  📥 Export CSV
                 </button>
+                <div class="rbac-hr-admin">
+                  <button class="btn btn-primary btn-sm" id="open-add-emp-btn">
+                    + Add Employee
+                  </button>
+                </div>
               </div>
             </div>
 
@@ -368,8 +465,13 @@
                 <h3 style="font-family: var(--font-heading); font-size: 1.1rem; font-weight: 700;">Real-Time Daily Attendance Log</h3>
                 <p style="font-size: 0.82rem; color: var(--text-muted);">Timestamped shift logs, IP audit records, and daily clock-in compliance.</p>
               </div>
-              <div style="font-family: var(--font-mono); font-size: 0.84rem; color: var(--primary); font-weight: 700;">
-                Today: 218 Present / 245 Headcount
+              <div style="display: flex; gap: 12px; align-items: center;">
+                <span style="font-family: var(--font-mono); font-size: 0.84rem; color: var(--primary); font-weight: 700;">
+                  Today: 218 Present / 245 Headcount
+                </span>
+                <button class="btn btn-secondary btn-sm" id="export-attendance-csv-btn" title="Download daily timestamped attendance audit">
+                  📥 Export CSV
+                </button>
               </div>
             </div>
 
@@ -393,7 +495,7 @@
         </section>
 
         <!-- ==================================================================
-             TAB 5: TASKS & PERFORMANCE
+             TAB 5: TASKS & ASSIGNMENTS
              ================================================================== -->
         <section class="tab-panel" id="tab-tasks">
           <div style="margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
@@ -409,7 +511,129 @@
         </section>
 
         <!-- ==================================================================
-             TAB 6: MERN STACK ARCHITECTURE SPECIFICATION
+             TAB 6: PAYROLL & PAYSLIPS
+             ================================================================== -->
+        <section class="tab-panel" id="tab-payroll">
+          <!-- Payroll KPI Summary Cards -->
+          <div class="kpi-cards-grid" style="margin-bottom: 24px;">
+            <div class="kpi-card">
+              <div>
+                <div class="kpi-label">Monthly Disbursement</div>
+                <div class="kpi-val" style="font-size: 1.45rem;">₹2,35,20,000</div>
+                <div class="kpi-subtext" style="color: #059669; font-weight: 600;">
+                  ● September 2026 Cycle Disbursed
+                </div>
+              </div>
+              <div class="kpi-icon-wrap kpi-blue">💰</div>
+            </div>
+
+            <div class="kpi-card">
+              <div>
+                <div class="kpi-label">Average CTC / Salary</div>
+                <div class="kpi-val" style="font-size: 1.45rem;">₹96,000 <small style="font-size: 0.8rem; font-weight: normal;">/mo</small></div>
+                <div class="kpi-subtext" style="color: var(--text-muted); font-weight: 600;">
+                  Across 245 FTE workforce
+                </div>
+              </div>
+              <div class="kpi-icon-wrap kpi-green">📊</div>
+            </div>
+
+            <div class="kpi-card">
+              <div>
+                <div class="kpi-label">Next Pay Date</div>
+                <div class="kpi-val" style="font-size: 1.45rem;">Oct 01, 2026</div>
+                <div class="kpi-subtext" style="color: #2563EB; font-weight: 600;">
+                  Automated NEFT Scheduled
+                </div>
+              </div>
+              <div class="kpi-icon-wrap kpi-purple">🗓️</div>
+            </div>
+
+            <div class="kpi-card">
+              <div>
+                <div class="kpi-label">Tax &amp; PF Compliance</div>
+                <div class="kpi-val" style="font-size: 1.45rem;">100% Valid</div>
+                <div class="kpi-subtext" style="color: #059669; font-weight: 600;">
+                  EPFO &amp; Form 16 Synchronized
+                </div>
+              </div>
+              <div class="kpi-icon-wrap kpi-amber">🛡️</div>
+            </div>
+          </div>
+
+          <!-- Payslip Roster Table -->
+          <div class="data-table-card">
+            <div class="table-toolbar">
+              <div>
+                <h3 style="font-family: var(--font-heading); font-size: 1.1rem; font-weight: 700;">Employee Payslips &amp; Salary Ledger</h3>
+                <p style="font-size: 0.82rem; color: var(--text-muted);">Inspect gross compensation, statutory PF deductions, professional tax, and net take-home pay.</p>
+              </div>
+            </div>
+
+            <div class="table-responsive">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Employee</th>
+                    <th>Role &amp; Department</th>
+                    <th>Pay Period</th>
+                    <th>Gross Salary</th>
+                    <th>Deductions (PF+Tax)</th>
+                    <th>Net Disbursed</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody id="payroll-table-body">
+                  <!-- Injected dynamically -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- ==================================================================
+             TAB 7: PERFORMANCE & OKRs
+             ================================================================== -->
+        <section class="tab-panel" id="tab-performance">
+          <div style="margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+            <div>
+              <h3 style="font-family: var(--font-heading); font-size: 1.2rem; font-weight: 800;">Quarterly Performance Reviews &amp; OKRs</h3>
+              <p style="font-size: 0.86rem; color: var(--text-muted);">Managerial evaluations, key milestones delivery, competency ratings, and talent feedback.</p>
+            </div>
+            <div style="font-family: var(--font-mono); font-size: 0.82rem; background: #EFF6FF; color: #2563EB; padding: 6px 12px; border-radius: var(--radius-md); font-weight: 600;">
+              Cycle: Q3 2026 (Active)
+            </div>
+          </div>
+
+          <div class="review-grid" id="reviews-grid-container">
+            <!-- Injected dynamically -->
+          </div>
+        </section>
+
+        <!-- ==================================================================
+             TAB 8: DOCUMENT VAULT
+             ================================================================== -->
+        <section class="tab-panel" id="tab-documents">
+          <div class="data-table-card" style="padding: 24px; margin-bottom: 24px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px; margin-bottom: 20px;">
+              <div>
+                <h3 style="font-family: var(--font-heading); font-size: 1.2rem; font-weight: 800;">Enterprise Document Vault</h3>
+                <p style="font-size: 0.86rem; color: var(--text-muted);">Secure, encrypted Cloudinary repository for employment contracts, Form 16, NDAs, and benefits.</p>
+              </div>
+              <button class="btn btn-primary" id="open-upload-doc-btn">
+                + Upload Document
+              </button>
+            </div>
+
+            <div class="doc-grid" id="documents-grid-container">
+              <!-- Injected dynamically -->
+            </div>
+          </div>
+        </section>
+
+        <!-- ==================================================================
+             TAB 9: MERN STACK ARCHITECTURE SPECIFICATION
              ================================================================== -->
         <section class="tab-panel" id="tab-architecture">
           <div style="background: #FFFFFF; border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); padding: 28px; box-shadow: var(--shadow-sm);">
@@ -514,6 +738,13 @@
                     <td><span style="color: #059669; font-weight: 700;">✓</span></td>
                     <td><span style="color: var(--text-dim);">✕ Status Update Only</span></td>
                   </tr>
+                  <tr>
+                    <td><strong>Access Payroll &amp; Download Payslips</strong></td>
+                    <td><span style="color: #059669; font-weight: 700;">✓ All Employees</span></td>
+                    <td><span style="color: #059669; font-weight: 700;">✓ All Employees</span></td>
+                    <td><span style="color: #2563EB; font-weight: 600;">Personal Only</span></td>
+                    <td><span style="color: #2563EB; font-weight: 600;">Personal Only</span></td>
+                  </tr>
                 </tbody>
               </table>
             </div>
@@ -604,6 +835,66 @@
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" onclick="document.getElementById('apply-leave-modal').classList.remove('show')">Cancel</button>
           <button type="submit" class="btn btn-primary">Submit Application 📬</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ========================================================================
+       MODAL 3: Payslip Voucher Viewer
+       ======================================================================== -->
+  <div class="modal-overlay" id="payslip-view-modal">
+    <div class="modal-dialog" style="max-width: 680px;">
+      <div class="modal-header">
+        <h3 class="modal-title">Official Salary Payslip Voucher</h3>
+        <button type="button" class="btn btn-secondary btn-sm" onclick="document.getElementById('payslip-view-modal').classList.remove('show')">✕</button>
+      </div>
+      <div class="modal-body" id="payslip-modal-content">
+        <!-- Rendered dynamically -->
+      </div>
+      <div class="modal-footer" style="justify-content: space-between;">
+        <span style="font-size: 0.78rem; color: var(--text-muted); font-family: var(--font-mono);">Digitally Signed &bull; EPFO Compliant</span>
+        <div style="display: flex; gap: 8px;">
+          <button type="button" class="btn btn-secondary" onclick="document.getElementById('payslip-view-modal').classList.remove('show')">Close</button>
+          <button type="button" class="btn btn-primary" id="print-payslip-btn">🖨️ Print / Save PDF</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================================
+       MODAL 4: Upload Document to Vault
+       ======================================================================== -->
+  <div class="modal-overlay" id="upload-doc-modal">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3 class="modal-title">Upload Employee Document</h3>
+        <button type="button" class="btn btn-secondary btn-sm" onclick="document.getElementById('upload-doc-modal').classList.remove('show')">✕</button>
+      </div>
+      <form id="upload-doc-form">
+        <div class="modal-body">
+          <div class="form-group">
+            <label class="form-label" for="doc-title-input">Document Title</label>
+            <input type="text" id="doc-title-input" class="form-input" placeholder="e.g. Master NDA or Degree Certificate" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="doc-type-select">Document Category</label>
+            <select id="doc-type-select" class="form-select" required>
+              <option value="Legal Agreement">Legal Agreement</option>
+              <option value="Tax Compliance">Tax Compliance (Form 16)</option>
+              <option value="Compliance">Compliance &amp; Policy</option>
+              <option value="Benefits">Health Insurance &amp; Benefits</option>
+              <option value="Identity">Government ID / Passport</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Select File (PDF, DOCX, PNG)</label>
+            <input type="file" id="doc-file-input" class="form-input" style="padding: 6px;" required>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="document.getElementById('upload-doc-modal').classList.remove('show')">Cancel</button>
+          <button type="submit" class="btn btn-primary">Upload &amp; Encrypt 📁</button>
         </div>
       </form>
     </div>
