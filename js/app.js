@@ -1,7 +1,7 @@
 /**
  * PulseHR Enterprise — Client Controller & Interactive Application Engine
  * Handles State, RBAC Rendering, SVG Visualizations, CRUD Operations, Payroll,
- * Document Vault, Notifications, CSV Exports, and Modals
+ * Document Vault, Notifications, CSV Exports, and Modals (100% Clean Professional Vector UI)
  */
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -139,14 +139,14 @@ document.addEventListener('DOMContentLoaded', () => {
     if (guideAdminBtn) {
       guideAdminBtn.addEventListener('click', () => {
         switchRole('admin');
-        showToast('👑 Admin Mode active: Full provisioning, analytics, and delete permissions enabled.');
+        showToast('Admin Mode active: Full provisioning, analytics, and delete permissions enabled.');
       });
     }
 
     if (guideEmpBtn) {
       guideEmpBtn.addEventListener('click', () => {
         switchRole('employee');
-        showToast('👤 Employee Mode active: Restricted to personal view, applying leaves, and clocking in.');
+        showToast('Employee Mode active: Restricted to personal view, applying leaves, and clocking in.');
       });
     }
   }
@@ -216,7 +216,6 @@ document.addEventListener('DOMContentLoaded', () => {
       const q = e.target.value.toLowerCase().trim();
       if (!q) return;
 
-      // Filter employees table if open, or switch to it if searching specifically
       const empSearch = document.getElementById('emp-search-input');
       if (empSearch) {
         empSearch.value = q;
@@ -228,7 +227,6 @@ document.addEventListener('DOMContentLoaded', () => {
       if (e.key === 'Enter') {
         const q = searchInput.value.toLowerCase().trim();
         if (!q) return;
-        // Switch to employees tab to show match
         const empTabBtn = document.querySelector('[data-tab=employees]');
         if (empTabBtn) empTabBtn.click();
         showToast(`Filtered directory for "${q}"`);
@@ -404,7 +402,7 @@ document.addEventListener('DOMContentLoaded', () => {
           </td>
           <td>
             <button class="btn btn-secondary btn-sm delete-emp-btn rbac-admin" data-id="${emp.id}" title="Remove Employee">
-              🗑️ Delete
+              Delete
             </button>
           </td>
         </tr>
@@ -461,8 +459,8 @@ document.addEventListener('DOMContentLoaded', () => {
           <td>
             ${lv.status === 'Pending' ? `
               <div style="display: flex; gap: 6px;" class="rbac-manager">
-                <button class="btn btn-primary btn-sm approve-leave-btn" data-id="${lv.id}">✓ Approve</button>
-                <button class="btn btn-secondary btn-sm reject-leave-btn" data-id="${lv.id}">✕ Reject</button>
+                <button class="btn btn-primary btn-sm approve-leave-btn" data-id="${lv.id}">Approve</button>
+                <button class="btn btn-secondary btn-sm reject-leave-btn" data-id="${lv.id}">Reject</button>
               </div>
             ` : `<span style="font-size: 0.8rem; color: var(--text-dim);">Processed</span>`}
           </td>
@@ -479,7 +477,7 @@ document.addEventListener('DOMContentLoaded', () => {
             store.metrics.onLeave++;
             initKPIsAndCharts();
             renderLeaves();
-            showToast(`Leave request #${id} approved!`);
+            showToast(`Leave request #${id} approved.`);
           }
         });
       });
@@ -509,6 +507,7 @@ document.addEventListener('DOMContentLoaded', () => {
      ======================================================================== */
   function initAttendanceModule() {
     const clockBtn = document.getElementById('clock-in-widget-btn');
+    const clockLabel = document.getElementById('clock-in-btn-label');
     const attBody = document.getElementById('attendance-table-body');
     let isClockedIn = false;
 
@@ -517,7 +516,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const timeNow = new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
         if (!isClockedIn) {
           isClockedIn = true;
-          clockBtn.innerHTML = `⏱️ Clock Out (${timeNow})`;
+          if (clockLabel) clockLabel.textContent = `Clock Out (${timeNow})`;
           clockBtn.style.background = '#FEF2F2';
           clockBtn.style.color = '#B91C1C';
           clockBtn.style.borderColor = '#FECACA';
@@ -532,10 +531,10 @@ document.addEventListener('DOMContentLoaded', () => {
           store.metrics.presentToday++;
           initKPIsAndCharts();
           renderAttendance();
-          showToast(`Clocked IN at ${timeNow}! Real-time ingress recorded.`);
+          showToast(`Clocked IN at ${timeNow}. Real-time ingress recorded.`);
         } else {
           isClockedIn = false;
-          clockBtn.innerHTML = `⏱️ Clock In`;
+          if (clockLabel) clockLabel.textContent = `Clock In`;
           clockBtn.style.background = '';
           clockBtn.style.color = '';
           clockBtn.style.borderColor = '';
@@ -544,7 +543,7 @@ document.addEventListener('DOMContentLoaded', () => {
             store.attendanceLogs[0].timeOut = timeNow;
           }
           renderAttendance();
-          showToast(`Clocked OUT at ${timeNow}! Shift archived.`);
+          showToast(`Clocked OUT at ${timeNow}. Shift archived.`);
         }
       });
     }
@@ -608,7 +607,7 @@ document.addEventListener('DOMContentLoaded', () => {
           const tsk = store.tasks.find(t => t.id === id);
           if (tsk) {
             tsk.status = sel.value;
-            showToast(`Task ${id} updated to ${sel.value}!`);
+            showToast(`Task ${id} updated to ${sel.value}.`);
           }
         });
       });
@@ -652,7 +651,7 @@ document.addEventListener('DOMContentLoaded', () => {
           </td>
           <td>
             <button class="btn btn-secondary btn-sm view-slip-btn" data-id="${slip.id}">
-              👁️ View Payslip
+              View Payslip
             </button>
           </td>
         </tr>
@@ -780,8 +779,8 @@ document.addEventListener('DOMContentLoaded', () => {
               ${rev.department} &bull; Reviewer: ${rev.reviewer}
             </div>
           </div>
-          <div style="background: #FEF3C7; color: #B45309; padding: 4px 10px; border-radius: var(--radius-full); font-weight: 800; font-size: 0.85rem; display: flex; align-items: center; gap: 4px;">
-            ⭐ ${rev.rating} / 5.0
+          <div style="background: #FEF3C7; color: #B45309; padding: 4px 10px; border-radius: var(--radius-full); font-weight: 800; font-size: 0.82rem; display: flex; align-items: center; gap: 4px;">
+            Rating: ${rev.rating} / 5.0
           </div>
         </div>
 
@@ -800,7 +799,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 8px; border-top: 1px solid var(--border-subtle);">
           <span class="brand-badge" style="font-size: 0.72rem; background: #ECFDF5; color: #059669; border-color: #A7F3D0;">
-            🏆 ${rev.badge}
+            ${rev.badge}
           </span>
           <span style="font-family: var(--font-mono); font-size: 0.78rem; color: var(--text-muted);">${rev.period}</span>
         </div>
@@ -823,8 +822,8 @@ document.addEventListener('DOMContentLoaded', () => {
       grid.innerHTML = store.documents.map(doc => `
         <div class="doc-card">
           <div style="display: flex; align-items: flex-start; gap: 12px;">
-            <div style="font-size: 1.8rem; background: #EFF6FF; padding: 10px; border-radius: var(--radius-md); border: 1px solid #DBEAFE;">
-              📄
+            <div style="background: #EFF6FF; padding: 10px; border-radius: var(--radius-md); border: 1px solid #DBEAFE; display: flex; align-items: center; justify-content: center;">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></svg>
             </div>
             <div>
               <div style="font-weight: 700; font-size: 0.92rem; color: var(--text-main); line-height: 1.35;">
@@ -838,15 +837,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
           <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.78rem; color: var(--text-muted); padding-top: 8px; border-top: 1px solid var(--border-subtle);">
             <span style="font-family: var(--font-mono);">${doc.fileSize}</span>
-            <span class="status-badge badge-active">✓ ${doc.status}</span>
+            <span class="status-badge badge-active">${doc.status}</span>
           </div>
 
           <div style="display: flex; gap: 8px;">
             <button class="btn btn-secondary btn-sm preview-doc-btn" style="flex: 1;" data-title="${doc.title}">
-              👁️ Preview
+              Preview
             </button>
             <button class="btn btn-primary btn-sm download-doc-btn" style="flex: 1;" data-title="${doc.title}">
-              ⬇️ Download
+              Download
             </button>
           </div>
         </div>
@@ -891,7 +890,7 @@ document.addEventListener('DOMContentLoaded', () => {
         renderDocs();
         uploadModal.classList.remove('show');
         uploadForm.reset();
-        showToast(`Document "${title}" encrypted and uploaded to Cloudinary Vault!`);
+        showToast(`Document "${title}" encrypted and uploaded to Cloudinary Vault.`);
       });
     }
 
@@ -923,7 +922,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const csvContent = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
         downloadCSVBlob(csvContent, 'PulseHR_Employees_Directory_2026.csv');
-        showToast('Exported complete Employee Roster to CSV!');
+        showToast('Exported complete Employee Roster to CSV.');
       });
     }
 
@@ -942,7 +941,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const csvContent = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
         downloadCSVBlob(csvContent, 'PulseHR_Daily_Attendance_Audit_2026.csv');
-        showToast('Exported Daily Attendance Audit to CSV!');
+        showToast('Exported Daily Attendance Audit to CSV.');
       });
     }
   }
@@ -1004,7 +1003,7 @@ document.addEventListener('DOMContentLoaded', () => {
         initEmployeesTable();
         addEmpModal.classList.remove('show');
         addEmpForm.reset();
-        showToast(`Employee ${name} provisioned in company directory!`);
+        showToast(`Employee ${name} provisioned in company directory.`);
       });
     }
 
@@ -1047,7 +1046,7 @@ document.addEventListener('DOMContentLoaded', () => {
         initLeavesModule();
         leaveModal.classList.remove('show');
         leaveForm.reset();
-        showToast(`Leave application submitted for managerial approval!`);
+        showToast(`Leave application submitted for managerial approval.`);
       });
     }
   }

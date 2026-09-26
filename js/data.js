@@ -60,7 +60,7 @@ var PULSEHR_DATA = {
     pendingRequests: 10
   },
 
-  // Monthly Trajectory for Employee Growth 📈 Chart
+  // Monthly Trajectory for Employee Growth Chart
   growthTrajectory: [
     { month: "Jan", count: 175 },
     { month: "Feb", count: 184 },
@@ -76,7 +76,7 @@ var PULSEHR_DATA = {
     { month: "Dec", count: 245 }
   ],
 
-  // Department Breakdown for Distribution 📊 Chart
+  // Department Breakdown for Distribution Chart
   departments: [
     { name: "Engineering", count: 103, percentage: 42, color: "#2563EB", lead: "Vikram Sengupta" },
     { name: "Product & Design", count: 44, percentage: 18, color: "#7C3AED", lead: "Ananya Roy" },
