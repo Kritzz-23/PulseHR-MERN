@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PulseHR — Enterprise Employee Management &amp; HRMS Platform</title>
+  
+  <meta name="title" content="PulseHR — Enterprise Employee Management &amp; HRMS Platform">
+  <meta name="description" content="Industry-grade MERN Stack HRMS & Employee Management System featuring hierarchical RBAC (Admin, HR, Manager, Employee), JWT Authentication, Real-time Attendance, Leave Approvals, and Company Analytics.">
+  <meta name="author" content="Kritika Giri">
+
+  <!-- Google Fonts: Plus Jakarta Sans & Outfit -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Outfit:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2222%22 fill=%22%232563EB%22/><text x=%2250%22 y=%2268%22 font-size=%2254%22 text-anchor=%22middle%22 fill=%22white%22 font-family=%22sans-serif%22 font-weight=%22bold%22>P</text></svg>">
+</head>
+<body>
+
+  <div class="app-container">
+    <!-- Sidebar Navigation -->
+    <aside class="app-sidebar" id="app-sidebar">
+      <div class="sidebar-header">
+        <div class="brand-icon-box">P</div>
+        <div>
+          <span class="brand-text">PulseHR</span>
+          <span class="brand-badge">MERN</span>
+        </div>
+      </div>
+
+      <ul class="sidebar-menu">
+        <li class="sidebar-section-title">Core Modules</li>
+        <li>
+          <button class="nav-tab-btn active" data-tab="dashboard">
+            <span class="tab-icon">📊</span>
+            <span class="tab-label">Dashboard &amp; Stats</span>
+          </button>
+        </li>
+        <li>
+          <button class="nav-tab-btn" data-tab="employees">
+            <span class="tab-icon">👥</span>
+            <span class="tab-label">Employees Directory</span>
+          </button>
+        </li>
+        <li>
+          <button class="nav-tab-btn" data-tab="leaves">
+            <span class="tab-icon">🗓️</span>
+            <span class="tab-label">Leave Approvals</span>
+          </button>
+        </li>
+        <li>
+          <button class="nav-tab-btn" data-tab="attendance">
+            <span class="tab-icon">⏱️</span>
+            <span class="tab-label">Daily Attendance</span>
+          </button>
+        </li>
+        <li>
+          <button class="nav-tab-btn" data-tab="tasks">
+            <span class="tab-icon">✅</span>
+            <span class="tab-label">Team Tasks</span>
+          </button>
+        </li>
+
+        <li class="sidebar-section-title">Architecture</li>
+        <li>
+          <button class="nav-tab-btn" data-tab="architecture">
+            <span class="tab-icon">⚡</span>
+            <span class="tab-label">MERN Stack Spec</span>
+          </button>
+        </li>
+      </ul>
+
+      <!-- User Profile Card in Sidebar -->
+      <div class="sidebar-footer">
+        <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150" alt="Active User" class="user-avatar-sm" id="sidebar-user-avatar">
+        <div class="user-info-text">
+          <div class="user-name-label" id="sidebar-user-name">Kritika Giri</div>
+          <div class="user-role-badge" id="sidebar-user-role">ADMIN &bull; Engineering</div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="app-main">
+      <!-- Top App Bar -->
+      <header class="app-topbar">
+        <div class="topbar-left">
+          <button class="mobile-menu-btn" id="mobile-toggle" aria-label="Toggle menu">☰</button>
+          <h1 class="page-title" id="page-title">Executive HRMS Dashboard</h1>
+        </div>
+
+        <div class="topbar-right">
+          <!-- 1-Click Role Switcher -->
+          <div class="role-switcher-box" title="Switch Role Perspective">
+            <span style="font-size: 0.76rem; font-weight: 700; color: var(--text-muted); margin-left: 6px; margin-right: 2px;">ROLE:</span>
+            <button class="role-btn active" data-role="admin">👑 Admin</button>
+            <button class="role-btn" data-role="hr">💼 HR</button>
+            <button class="role-btn" data-role="manager">👔 Manager</button>
+            <button class="role-btn" data-role="employee">👤 Employee</button>
+          </div>
+
+          <!-- Quick Clock In Widget -->
+          <button class="clock-widget-btn" id="clock-in-widget-btn" title="Quick Attendance Ingress">
+            ⏱️ Clock In
+          </button>
+
+          <!-- JWT Session Badge -->
+          <div class="jwt-pill-badge" id="jwt-pill-badge">
+            ● JWT ACTIVE (ADMIN)
+          </div>
+
+          <a href="https://github.com/Kritzz-23/PulseHR-MERN" target="_blank" rel="noopener noreferrer" class="btn btn-secondary btn-sm" title="View Source Code on GitHub">
+            🐙 Code
+          </a>
+        </div>
+      </header>
+
+      <!-- App Body Panels -->
+      <div class="content-body">
+        
+        <!-- ==================================================================
+             TAB 1: DASHBOARD
+             ================================================================== -->
+        <section class="tab-panel active" id="tab-dashboard">
+          
+          <!-- Architecture Alert Banner -->
+          <div style="background: #FFFFFF; border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); padding: 18px 24px; margin-bottom: 24px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px; box-shadow: var(--shadow-xs);">
+            <div>
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <span style="font-family: var(--font-mono); font-size: 0.72rem; font-weight: 700; color: #2563EB; background: #EFF6FF; padding: 2px 8px; border-radius: 4px;">
+                  MERN STACK ARCHITECTURE
+                </span>
+                <span style="font-size: 0.82rem; color: #059669; font-weight: 700;">● SYSTEM OPERATIONAL</span>
+              </div>
+              <p style="font-size: 0.88rem; color: var(--text-secondary); margin-top: 4px;">
+                React Client &bull; Axios &bull; Express REST API &bull; Node.js Async Engine &bull; MongoDB Database &bull; JWT Role-Based Access Control
+              </p>
+            </div>
+            <div style="display: flex; gap: 8px;">
+              <button class="btn btn-secondary btn-sm" onclick="document.querySelector('[data-tab=architecture]').click()">
+                View System Specs ↗
+              </button>
+            </div>
+          </div>
+
+          <!-- 4 Core Metric KPI Cards (Exact User Request) -->
+          <div class="kpi-cards-grid">
+            <!-- 1. Total Employees -->
+            <div class="kpi-card">
+              <div>
+                <div class="kpi-label">Total Employees</div>
+                <div class="kpi-val" id="kpi-total-emp">245</div>
+                <div class="kpi-subtext" style="color: #059669; font-weight: 600;">
+                  ▲ +14 new hires this month
+                </div>
+              </div>
+              <div class="kpi-icon-wrap kpi-blue">👥</div>
+            </div>
+
+            <!-- 2. Present Today -->
+            <div class="kpi-card">
+              <div>
+                <div class="kpi-label">Present Today</div>
+                <div class="kpi-val" id="kpi-present">218</div>
+                <div class="kpi-subtext" style="color: #059669; font-weight: 600;">
+                  ● 89% Attendance Velocity
+                </div>
+              </div>
+              <div class="kpi-icon-wrap kpi-green">⏱️</div>
+            </div>
+
+            <!-- 3. On Leave -->
+            <div class="kpi-card">
+              <div>
+                <div class="kpi-label">On Leave</div>
+                <div class="kpi-val" id="kpi-on-leave">17</div>
+                <div class="kpi-subtext" style="color: #D97706; font-weight: 600;">
+                  7% of total workforce
+                </div>
+              </div>
+              <div class="kpi-icon-wrap kpi-amber">🏖️</div>
+            </div>
+
+            <!-- 4. Pending Requests -->
+            <div class="kpi-card">
+              <div>
+                <div class="kpi-label">Pending Requests</div>
+                <div class="kpi-val" id="kpi-pending-req">10</div>
+                <div class="kpi-subtext" style="color: #7C3AED; font-weight: 600;">
+                  Requires managerial review
+                </div>
+              </div>
+              <div class="kpi-icon-wrap kpi-purple">📬</div>
+            </div>
+          </div>
+
+          <!-- 2 Visual Charts: Employee Growth & Department Distribution -->
+          <div class="charts-grid">
+            <!-- Chart 1: Employee Growth 📈 Line Chart -->
+            <div class="chart-card">
+              <div class="chart-header">
+                <div class="chart-title">
+                  <span>📈 Employee Growth Trajectory</span>
+                </div>
+                <span style="font-family: var(--font-mono); font-size: 0.78rem; color: var(--text-muted);">
+                  175 → 245 Employees (12-Month)
+                </span>
+              </div>
+              <div class="growth-svg-wrap">
+                <svg id="growth-svg" viewBox="0 0 640 200" preserveAspectRatio="none" style="width: 100%; height: 100%;"></svg>
+              </div>
+            </div>
+
+            <!-- Chart 2: Department Distribution 📊 Chart -->
+            <div class="chart-card">
+              <div class="chart-header">
+                <div class="chart-title">
+                  <span>📊 Department Distribution</span>
+                </div>
+                <span style="font-family: var(--font-mono); font-size: 0.78rem; color: var(--text-muted);">
+                  5 Key Divisions
+                </span>
+              </div>
+              <div class="dept-bars-list" id="dept-bars-list">
+                <!-- Injected dynamically -->
+              </div>
+            </div>
+          </div>
+
+          <!-- Recent Leave Requests Quick Triage Table -->
+          <div class="data-table-card">
+            <div class="table-toolbar">
+              <div style="font-weight: 700; font-family: var(--font-heading); font-size: 1.05rem;">
+                Pending Managerial Approvals (10 Requests)
+              </div>
+              <button class="btn btn-secondary btn-sm" onclick="document.querySelector('[data-tab=leaves]').click()">
+                View All Requests →
+              </button>
+            </div>
+            <div class="table-responsive">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Employee</th>
+                    <th>Type</th>
+                    <th>Duration</th>
+                    <th>Reason</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody id="leaves-quick-body">
+                  <tr>
+                    <td><strong>Meera Nair</strong><br><small style="color: var(--text-muted);">Product &amp; Design</small></td>
+                    <td>Casual Leave</td>
+                    <td>2026-09-28 → 2026-09-30 (3 Days)</td>
+                    <td>Attending National Design Conclave and family commitment.</td>
+                    <td><span class="status-badge badge-pending">● Pending</span></td>
+                    <td>
+                      <button class="btn btn-primary btn-sm" onclick="document.querySelector('[data-tab=leaves]').click()">Triage ↗</button>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td><strong>Rohan Varma</strong><br><small style="color: var(--text-muted);">Engineering</small></td>
+                    <td>Privilege Leave</td>
+                    <td>2026-10-05 → 2026-10-09 (5 Days)</td>
+                    <td>Annual vacation and personal travel.</td>
+                    <td><span class="status-badge badge-pending">● Pending</span></td>
+                    <td>
+                      <button class="btn btn-primary btn-sm" onclick="document.querySelector('[data-tab=leaves]').click()">Triage ↗</button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- ==================================================================
+             TAB 2: EMPLOYEES DIRECTORY
+             ================================================================== -->
+        <section class="tab-panel" id="tab-employees">
+          <div class="data-table-card">
+            <div class="table-toolbar">
+              <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                <input type="text" class="table-search-input" id="emp-search-input" placeholder="🔍 Search employee by name, ID, or title...">
+                <select class="table-filter-select" id="emp-dept-filter">
+                  <option value="All">All Departments</option>
+                  <option value="Engineering">Engineering</option>
+                  <option value="Product &amp; Design">Product &amp; Design</option>
+                  <option value="Sales &amp; Growth">Sales &amp; Growth</option>
+                  <option value="Marketing">Marketing</option>
+                  <option value="HR &amp; Operations">HR &amp; Operations</option>
+                </select>
+              </div>
+
+              <div class="rbac-hr-admin">
+                <button class="btn btn-primary" id="open-add-emp-btn">
+                  + Add Employee
+                </button>
+              </div>
+            </div>
+
+            <div class="table-responsive">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Employee Name</th>
+                    <th>Designation &amp; Email</th>
+                    <th>Department</th>
+                    <th>Reports To</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="employees-table-body">
+                  <!-- Injected dynamically -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- ==================================================================
+             TAB 3: LEAVE MANAGEMENT
+             ================================================================== -->
+        <section class="tab-panel" id="tab-leaves">
+          <div class="data-table-card">
+            <div class="table-toolbar">
+              <div>
+                <h3 style="font-family: var(--font-heading); font-size: 1.1rem; font-weight: 700;">Company Leave Requests &amp; Approvals</h3>
+                <p style="font-size: 0.82rem; color: var(--text-muted);">Managers and HR can review, approve, or reject employee leave tickets in real time.</p>
+              </div>
+              <button class="btn btn-primary" id="open-apply-leave-btn">
+                + Apply for Leave
+              </button>
+            </div>
+
+            <div class="table-responsive">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Applicant</th>
+                    <th>Leave Category</th>
+                    <th>Time Span</th>
+                    <th>Justification</th>
+                    <th>Status</th>
+                    <th>Approval Action</th>
+                  </tr>
+                </thead>
+                <tbody id="leaves-table-body">
+                  <!-- Injected dynamically -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- ==================================================================
+             TAB 4: ATTENDANCE
+             ================================================================== -->
+        <section class="tab-panel" id="tab-attendance">
+          <div class="data-table-card">
+            <div class="table-toolbar">
+              <div>
+                <h3 style="font-family: var(--font-heading); font-size: 1.1rem; font-weight: 700;">Real-Time Daily Attendance Log</h3>
+                <p style="font-size: 0.82rem; color: var(--text-muted);">Timestamped shift logs, IP audit records, and daily clock-in compliance.</p>
+              </div>
+              <div style="font-family: var(--font-mono); font-size: 0.84rem; color: var(--primary); font-weight: 700;">
+                Today: 218 Present / 245 Headcount
+              </div>
+            </div>
+
+            <div class="table-responsive">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Employee Name</th>
+                    <th>Employee ID</th>
+                    <th>Clock In Time</th>
+                    <th>Clock Out Time</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody id="attendance-table-body">
+                  <!-- Injected dynamically -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- ==================================================================
+             TAB 5: TASKS & PERFORMANCE
+             ================================================================== -->
+        <section class="tab-panel" id="tab-tasks">
+          <div style="margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+            <div>
+              <h3 style="font-family: var(--font-heading); font-size: 1.2rem; font-weight: 800;">Departmental Tasks &amp; Milestones</h3>
+              <p style="font-size: 0.86rem; color: var(--text-muted);">Managers delegate work, set priority urgency, and track status completion.</p>
+            </div>
+          </div>
+
+          <div id="tasks-list-container">
+            <!-- Injected dynamically -->
+          </div>
+        </section>
+
+        <!-- ==================================================================
+             TAB 6: MERN STACK ARCHITECTURE SPECIFICATION
+             ================================================================== -->
+        <section class="tab-panel" id="tab-architecture">
+          <div style="background: #FFFFFF; border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); padding: 28px; box-shadow: var(--shadow-sm);">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 16px; margin-bottom: 24px; padding-bottom: 18px; border-bottom: 1px solid var(--border-subtle);">
+              <div>
+                <span class="brand-badge" style="font-size: 0.78rem;">SYSTEM ARCHITECTURE SPECIFICATION</span>
+                <h2 style="font-family: var(--font-heading); font-size: 1.5rem; font-weight: 800; margin-top: 6px;">
+                  PulseHR MERN Implementation Architecture
+                </h2>
+                <p style="font-size: 0.90rem; color: var(--text-secondary); margin-top: 4px;">
+                  Complete end-to-end technical overview explaining data flow, database schemas, security, and caching.
+                </p>
+              </div>
+              <a href="https://github.com/Kritzz-23/PulseHR-MERN" target="_blank" rel="noopener noreferrer" class="btn btn-primary">
+                View GitHub Codebase 🐙
+              </a>
+            </div>
+
+            <!-- Architecture Diagram Grid -->
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-bottom: 28px;">
+              <div style="background: var(--bg-subtle); padding: 18px; border-radius: var(--radius-md); border: 1px solid var(--border-subtle);">
+                <div style="font-size: 1.4rem;">⚛️</div>
+                <div style="font-weight: 800; font-family: var(--font-heading); margin-top: 6px;">1. React Frontend</div>
+                <p style="font-size: 0.82rem; color: var(--text-muted); margin-top: 4px;">
+                  Axios HTTP interceptors, JWT authorization headers, state management, and real-time SVG analytics.
+                </p>
+              </div>
+
+              <div style="background: var(--bg-subtle); padding: 18px; border-radius: var(--radius-md); border: 1px solid var(--border-subtle);">
+                <div style="font-size: 1.4rem;">⚡</div>
+                <div style="font-weight: 800; font-family: var(--font-heading); margin-top: 6px;">2. Express Gateway</div>
+                <p style="font-size: 0.82rem; color: var(--text-muted); margin-top: 4px;">
+                  RESTful routing, rate limiting (200 req/15min), Helmet HTTP headers, CORS, and centralized error handling.
+                </p>
+              </div>
+
+              <div style="background: var(--bg-subtle); padding: 18px; border-radius: var(--radius-md); border: 1px solid var(--border-subtle);">
+                <div style="font-size: 1.4rem;">🔒</div>
+                <div style="font-weight: 800; font-family: var(--font-heading); margin-top: 6px;">3. JWT &amp; RBAC</div>
+                <p style="font-size: 0.82rem; color: var(--text-muted); margin-top: 4px;">
+                  Hierarchical role evaluation (Admin = 4, HR = 3, Manager = 2, Employee = 1) with bcrypt salt rounds.
+                </p>
+              </div>
+
+              <div style="background: var(--bg-subtle); padding: 18px; border-radius: var(--radius-md); border: 1px solid var(--border-subtle);">
+                <div style="font-size: 1.4rem;">🍃</div>
+                <div style="font-weight: 800; font-family: var(--font-heading); margin-top: 6px;">4. MongoDB &amp; Mongoose</div>
+                <p style="font-size: 0.82rem; color: var(--text-muted); margin-top: 4px;">
+                  Relational document schemas for User, Employee, Department, Attendance, Leave, Task, and Performance.
+                </p>
+              </div>
+            </div>
+
+            <!-- Role Permissions Matrix Table -->
+            <h3 style="font-family: var(--font-heading); font-size: 1.15rem; font-weight: 700; margin-bottom: 12px;">
+              Role Permissions &amp; Access Control Matrix
+            </h3>
+            <div class="table-responsive">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Action / Endpoint</th>
+                    <th>Admin</th>
+                    <th>HR Lead</th>
+                    <th>Manager</th>
+                    <th>Employee</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><strong>View Company Analytics &amp; Headcount</strong></td>
+                    <td><span style="color: #059669; font-weight: 700;">✓ Full Access</span></td>
+                    <td><span style="color: #059669; font-weight: 700;">✓ Full Access</span></td>
+                    <td><span style="color: #2563EB; font-weight: 600;">Team Only</span></td>
+                    <td><span style="color: var(--text-dim);">✕ No Access</span></td>
+                  </tr>
+                  <tr>
+                    <td><strong>Add / Remove Employee Records</strong></td>
+                    <td><span style="color: #059669; font-weight: 700;">✓ Create &amp; Delete</span></td>
+                    <td><span style="color: #059669; font-weight: 700;">✓ Create &amp; Update</span></td>
+                    <td><span style="color: var(--text-dim);">✕ No Access</span></td>
+                    <td><span style="color: var(--text-dim);">✕ No Access</span></td>
+                  </tr>
+                  <tr>
+                    <td><strong>Approve / Reject Leave Tickets</strong></td>
+                    <td><span style="color: #059669; font-weight: 700;">✓ Override</span></td>
+                    <td><span style="color: #059669; font-weight: 700;">✓ Company-Wide</span></td>
+                    <td><span style="color: #059669; font-weight: 700;">✓ Direct Reports</span></td>
+                    <td><span style="color: var(--text-dim);">✕ Apply Only</span></td>
+                  </tr>
+                  <tr>
+                    <td><strong>Clock-In / Clock-Out Attendance</strong></td>
+                    <td><span style="color: #059669; font-weight: 700;">✓</span></td>
+                    <td><span style="color: #059669; font-weight: 700;">✓</span></td>
+                    <td><span style="color: #059669; font-weight: 700;">✓</span></td>
+                    <td><span style="color: #059669; font-weight: 700;">✓</span></td>
+                  </tr>
+                  <tr>
+                    <td><strong>Assign Tasks to Team Members</strong></td>
+                    <td><span style="color: #059669; font-weight: 700;">✓</span></td>
+                    <td><span style="color: #059669; font-weight: 700;">✓</span></td>
+                    <td><span style="color: #059669; font-weight: 700;">✓</span></td>
+                    <td><span style="color: var(--text-dim);">✕ Status Update Only</span></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- ========================================================================
+       MODAL 1: Add New Employee
+       ======================================================================== -->
+  <div class="modal-overlay" id="add-employee-modal">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3 class="modal-title">Provision New Employee</h3>
+        <button type="button" class="btn btn-secondary btn-sm" id="close-add-emp-btn">✕</button>
+      </div>
+      <form id="add-employee-form">
+        <div class="modal-body">
+          <div class="form-group">
+            <label class="form-label" for="new-emp-name">Full Name</label>
+            <input type="text" id="new-emp-name" class="form-input" placeholder="e.g. Ananya Sen" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="new-emp-email">Company Email</label>
+            <input type="email" id="new-emp-email" class="form-input" placeholder="e.g. ananya.s@pulsehr.io" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="new-emp-dept">Department</label>
+            <select id="new-emp-dept" class="form-select" required>
+              <option value="Engineering">Engineering</option>
+              <option value="Product &amp; Design">Product &amp; Design</option>
+              <option value="Sales &amp; Growth">Sales &amp; Growth</option>
+              <option value="Marketing">Marketing</option>
+              <option value="HR &amp; Operations">HR &amp; Operations</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="new-emp-desig">Designation</label>
+            <input type="text" id="new-emp-desig" class="form-input" placeholder="e.g. Full Stack Engineer" required>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="document.getElementById('add-employee-modal').classList.remove('show')">Cancel</button>
+          <button type="submit" class="btn btn-primary">Provision Employee 🚀</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ========================================================================
+       MODAL 2: Apply for Leave
+       ======================================================================== -->
+  <div class="modal-overlay" id="apply-leave-modal">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3 class="modal-title">Apply for Leave</h3>
+        <button type="button" class="btn btn-secondary btn-sm" id="close-apply-leave-btn">✕</button>
+      </div>
+      <form id="apply-leave-form">
+        <div class="modal-body">
+          <div class="form-group">
+            <label class="form-label" for="leave-type-select">Leave Category</label>
+            <select id="leave-type-select" class="form-select" required>
+              <option value="Casual Leave">Casual Leave (Balance: 12 Days)</option>
+              <option value="Sick Leave">Sick Leave (Balance: 10 Days)</option>
+              <option value="Privilege Leave">Privilege Leave (Balance: 15 Days)</option>
+              <option value="Unpaid Leave">Unpaid Leave</option>
+            </select>
+          </div>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+            <div class="form-group">
+              <label class="form-label" for="leave-start-date">Start Date</label>
+              <input type="date" id="leave-start-date" class="form-input" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="leave-end-date">End Date</label>
+              <input type="date" id="leave-end-date" class="form-input" required>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="leave-reason-text">Reason for Leave</label>
+            <textarea id="leave-reason-text" class="form-textarea" rows="3" placeholder="State reason for managerial review..." required></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="document.getElementById('apply-leave-modal').classList.remove('show')">Cancel</button>
+          <button type="submit" class="btn btn-primary">Submit Application 📬</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div class="toast-box" id="toast-notification">Notification</div>
+
+  <!-- Scripts -->
+  <script src="js/data.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
